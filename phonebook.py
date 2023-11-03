@@ -15,8 +15,9 @@ def input_data():
     phone = input("Введите Телефон: ")
     adr = input("Введите Адрес: ")
 
-    contact_str = f"{sur} {name} {pat} {phone} {adr}\n\n" 
+    contact_str = f"{sur} {name} {pat} {phone} {adr}\n" 
     file_append(contact_str)
+    #print(contact_str)
 
 def print_data():
     print(file_read())
@@ -38,21 +39,20 @@ def search_contact():
 
     search = input("Введите данные для поиска: ")
     print()
-    contacts_list = file_read().rstrip().split("\n\n")
-    #print(contacts_list)
+    contacts_list = file_read().rstrip().split("\n")
+    print("contacts_list", contacts_list)
 
     for contact_str in contacts_list:
-        cont_list = contact_str.replace("\n"," ").split()
+        cont_list = contact_str.replace("\n","").split()
         if search in cont_list[i_var]:
             return contact_str
-            #print()
 
 def change_contact():
-    find_cont = search_contact()
+    find_cont: str = search_contact()
+    # print(find_cont)
     find_str = "".join(find_cont)
-    old_arr = find_cont.split()
     find_arr = find_cont.split()
-    print('find_arr', find_str)
+    # print('find_arr', find_str)
 
     enter = int(input("Что хотите изменить?: \n"
         "1. Фамилию\n"
@@ -65,30 +65,47 @@ def change_contact():
     test = ' '.join(find_arr)
     print('test', test)
 
-    with open("phonebook.txt", "r", encoding="UTF-8") as file, open("phonebook_1.txt", "w+") as file2:
+    with open("phonebook.txt", "r", encoding="UTF-8") as file: 
         data = file.readlines()
+        # print('data', data)
+    with open("phonebook.txt", "w+") as file:
+        for line in data:
+            if not line.isspace():
+                line = line.rstrip()
+                print('line', line)
+                if line == find_cont:
+                    file.write(f"{test}\n") 
+                else:
+                    file.write(f"{line}\n")      
+
+
+def delete_contact():
+    find_cont: str = search_contact()
+    # print("find ", find_cont, "***")
+    with open("phonebook.txt", "r", encoding="UTF-8") as file: 
+        data = file.readlines()
+        # print("fileread data", data)
+    with open("phonebook.txt", "w+") as file:
         for line in data:
             line = line.strip()
-            if line == find_str:
-                file2.write(test)
-            else:
-                file2.write(f"{line} \n")
+            if line != find_cont:
+                file.write(f"{line}\n")
 
-        print('data', data)
-
+        # print('data', data)
 
 def u_interface():
     command = ""
-    while command != "5":
+    while command != "6":
         print("Меню:\n"
             "1. Добавить контакт\n"
             "2. Найти контакт\n"
             "3. Вывести все контакты\n"
             "4. Изменить контакт\n"
-            "5. Выход\n")
+            "5. Удалить контакт\n"
+            "6. Выход\n")
         command = input("Выберите пункт меню: ")
 
-        while command not in ("1","2","3","4","5"):        
+        while command not in ("1","2","3","4","5","6"):        
             print("Некорректный ввод, повторите попытку")
             command = input("Выберите пункт меню: ")
 
@@ -103,6 +120,8 @@ def u_interface():
             case "4":
                 change_contact()
             case "5":
+                delete_contact()
+            case "6":
                 print("Всего хорошего!")
 
 u_interface()
